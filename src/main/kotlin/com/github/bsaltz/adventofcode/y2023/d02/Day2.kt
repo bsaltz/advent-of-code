@@ -14,7 +14,7 @@ private val sampleResource: Resource = """
     Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
 """.trimIndent().toStringResource()
 
-private val inputResource: Resource = "2023/01/aoc-2023-d02-input.txt".toClassPathResource()
+private val inputResource: Resource = "2023/aoc-2023-d02-input.txt".toClassPathResource()
 
 fun main() {
     println("# Part 1")

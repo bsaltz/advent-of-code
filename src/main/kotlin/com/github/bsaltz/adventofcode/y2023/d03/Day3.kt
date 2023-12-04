@@ -19,7 +19,7 @@ private val sampleResource: Resource = """
     .664.598..
 """.trimIndent().toStringResource()
 
-private val inputResource: Resource = "2023/01/aoc-2023-d03-input.txt".toClassPathResource()
+private val inputResource: Resource = "2023/aoc-2023-d03-input.txt".toClassPathResource()
 
 fun main() {
     println("# Part 1")

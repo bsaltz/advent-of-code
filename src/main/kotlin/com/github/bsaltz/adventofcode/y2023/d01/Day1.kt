@@ -24,7 +24,7 @@ private val sampleResourceP2: Resource = """
     7pqrstsixteen
 """.trimIndent().toStringResource()
 
-private val inputResource: Resource = "2023/01/aoc-2023-d01-input.txt".toClassPathResource()
+private val inputResource: Resource = "2023/aoc-2023-d01-input.txt".toClassPathResource()
 
 fun main() {
     println("# Part 1")
