@@ -1,7 +1,7 @@
 package com.github.bsaltz.adventofcode.util
 
 object LangUtils {
-    private val defaultTokenizeRegex = Regex("\\s+")
+    val defaultTokenizeRegex = Regex("\\s+")
 
     inline fun <T, K, V> Iterable<T>.associateIndexed(transform: (Int, T) -> Pair<K, V>): Map<K, V> =
         mapIndexed(transform).associate { it }
@@ -26,5 +26,8 @@ object LangUtils {
 
     fun LongRange.shiftRange(distance: Long): LongRange = LongRange(start + distance, endInclusive + distance)
 
-    fun String.tokenize(splitRegex: Regex = defaultTokenizeRegex): List<String> = split(splitRegex)
+    inline fun <T> String.tokenize(splitRegex: Regex = defaultTokenizeRegex, transform: (String) -> T): List<T> =
+        split(splitRegex).map(transform)
+
+    fun String.tokenize(splitRegex: Regex = defaultTokenizeRegex): List<String> = tokenize(splitRegex) { it }
 }
