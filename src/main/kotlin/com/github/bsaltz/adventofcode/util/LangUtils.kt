@@ -6,8 +6,7 @@ object LangUtils {
     inline fun <T, K, V> Iterable<T>.associateIndexed(transform: (Int, T) -> Pair<K, V>): Map<K, V> =
         mapIndexed(transform).associate { it }
 
-    fun <T> Sequence<T>.zipToPairs(): Sequence<Pair<T, T>> =
-        zipWithNext().filterIndexed { index, _ -> index.and(1) == 0 }
+    fun <T> Sequence<T>.zipToPairs(): Sequence<Pair<T, T>> = chunked(2) { (first, second) -> first to second }
 
     fun LongRange.intersectRange(other: LongRange): LongRange? {
         if (step != 1L || other.step != 1L) {
