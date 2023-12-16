@@ -1,7 +1,7 @@
 package com.github.bsaltz.adventofcode.y2023.d06
 
-import com.github.bsaltz.adventofcode.util.LangUtils.tokenize
 import com.github.bsaltz.adventofcode.util.Resource
+import com.github.bsaltz.adventofcode.util.StringUtils.tokenize
 import com.github.bsaltz.adventofcode.util.toClassPathResource
 import com.github.bsaltz.adventofcode.util.toStringResource
 import kotlin.math.ceil

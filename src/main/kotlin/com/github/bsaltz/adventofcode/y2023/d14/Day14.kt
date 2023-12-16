@@ -92,14 +92,14 @@ object Day14 {
             }
         }.toDishMap()
 
-    sealed class Space(val char: Char)
-    data object EmptySpace : Space('.')
-    data object RoundRock : Space('O')
-    data object CubeRock : Space('#')
-    data class Point(val x: Int, val y: Int)
-    enum class Direction { NORTH, SOUTH, EAST, WEST }
+    private sealed class Space(val char: Char)
+    private data object EmptySpace : Space('.')
+    private data object RoundRock : Space('O')
+    private data object CubeRock : Space('#')
+    private data class Point(val x: Int, val y: Int)
+    private enum class Direction { NORTH, SOUTH, EAST, WEST }
 
-    data class DishMap(
+    private data class DishMap(
         val spacesByPoint: Map<Point, Space>,
         val width: Int,
         val height: Int,
@@ -164,7 +164,7 @@ object Day14 {
         fun totalLoadNorth(): Long =
             spacesByPoint.entries
                 .filter { (_, space) -> space is RoundRock }
-                .sumOf { (point, space) -> (height - point.y).toLong() }
+                .sumOf { (point, _) -> (height - point.y).toLong() }
 
         override fun toString(): String =
             yRange.joinToString("\n") { y -> xRange.joinToString("") { x -> space(x, y).char.toString() } }

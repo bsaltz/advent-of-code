@@ -1,9 +1,9 @@
 package com.github.bsaltz.adventofcode.y2023.d05
 
-import com.github.bsaltz.adventofcode.util.LangUtils.intersectRange
-import com.github.bsaltz.adventofcode.util.LangUtils.shiftRange
-import com.github.bsaltz.adventofcode.util.LangUtils.zipToPairs
+import com.github.bsaltz.adventofcode.util.RangeUtils.intersectRange
+import com.github.bsaltz.adventofcode.util.RangeUtils.shiftRange
 import com.github.bsaltz.adventofcode.util.Resource
+import com.github.bsaltz.adventofcode.util.SequenceUtils.zipToPairs
 import com.github.bsaltz.adventofcode.util.toClassPathResource
 import com.github.bsaltz.adventofcode.util.toStringResource
 

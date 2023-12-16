@@ -1,8 +1,8 @@
 package com.github.bsaltz.adventofcode.y2023.d13
 
 import com.github.bsaltz.adventofcode.util.*
-import com.github.bsaltz.adventofcode.util.LangUtils.cartesianProduct
-import com.github.bsaltz.adventofcode.util.LangUtils.chunked
+import com.github.bsaltz.adventofcode.util.IterableUtils.cartesianProduct
+import com.github.bsaltz.adventofcode.util.SequenceUtils.chunked
 
 private const val sampleResultP1: Long = 405L
 private const val sampleResultP2: Long = 400L

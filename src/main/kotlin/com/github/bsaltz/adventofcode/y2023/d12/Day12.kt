@@ -1,7 +1,7 @@
 package com.github.bsaltz.adventofcode.y2023.d12
 
 import com.github.bsaltz.adventofcode.util.*
-import com.github.bsaltz.adventofcode.util.LangUtils.tokenize
+import com.github.bsaltz.adventofcode.util.StringUtils.tokenize
 
 private const val sampleResultP1: Int = 21
 private const val sampleResultP2: Int = 525152

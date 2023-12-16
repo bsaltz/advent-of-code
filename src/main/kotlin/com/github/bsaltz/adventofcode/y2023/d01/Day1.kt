@@ -1,6 +1,6 @@
 package com.github.bsaltz.adventofcode.y2023.d01
 
-import com.github.bsaltz.adventofcode.util.LangUtils.associateIndexed
+import com.github.bsaltz.adventofcode.util.IterableUtils.associateIndexed
 import com.github.bsaltz.adventofcode.util.Resource
 import com.github.bsaltz.adventofcode.util.toClassPathResource
 import com.github.bsaltz.adventofcode.util.toStringResource
