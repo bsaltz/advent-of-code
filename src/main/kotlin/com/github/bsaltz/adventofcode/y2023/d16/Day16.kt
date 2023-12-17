@@ -40,32 +40,30 @@ object Day16 {
     }
 
     private fun parseGraph(lines: Sequence<String>): Graph {
-        val nodesByPoint: Map<Point, Node> = lines.flatMapIndexed { y, line ->
+        val nodes: Map<Point, Node> = parseNodes(lines).associateBy { it.point }
+        val width: Int = nodes.values.maxOf { it.point.x } + 1
+        val height: Int = nodes.values.maxOf { it.point.y } + 1
+        return Graph(connectNodes(width, height, nodes), width, height)
+    }
+
+    private fun parseNodes(lines: Sequence<String>): Sequence<Node> =
+        lines.flatMapIndexed { y, line ->
             line.mapIndexed { x, c -> Node(NodeType.valueOf(c), Point(x, y)) }
-        }.associateBy { it.point }
-        val width: Int = nodesByPoint.values.maxOf { it.point.x } + 1
-        val height: Int = nodesByPoint.values.maxOf { it.point.y } + 1
-        val newNodesByPoint: MutableMap<Point, Node> = nodesByPoint.toMutableMap()
+        }
+
+    private fun connectNodes(
+        width: Int,
+        height: Int,
+        nodes: Map<Point, Node>
+    ): Map<Point, Node> =
         (0..<width).cartesianProduct(0..<height)
             .map { (x, y) -> Point(x, y) }
-            .mapNotNull { newNodesByPoint[it] }
-            .forEach { node ->
-                val north = Edge(
-                    nextPoint = connection(Direction.NORTH, node.point, width, height, newNodesByPoint),
-                    nextDirection = Direction.NORTH,
-                ).takeIf { it.nextPoint != node.point }
-                val south = Edge(
-                    nextPoint = connection(Direction.SOUTH, node.point, width, height, newNodesByPoint),
-                    nextDirection = Direction.SOUTH,
-                ).takeIf { it.nextPoint != node.point }
-                val east = Edge(
-                    nextPoint = connection(Direction.EAST, node.point, width, height, newNodesByPoint),
-                    nextDirection = Direction.EAST,
-                ).takeIf { it.nextPoint != node.point }
-                val west = Edge(
-                    nextPoint = connection(Direction.WEST, node.point, width, height, newNodesByPoint),
-                    nextDirection = Direction.WEST,
-                ).takeIf { it.nextPoint != node.point }
+            .mapNotNull { nodes[it] }
+            .associate { node ->
+                val north by lazy { calculateEdge(Direction.NORTH, node, width, height, nodes) }
+                val south by lazy { calculateEdge(Direction.SOUTH, node, width, height, nodes) }
+                val east by lazy { calculateEdge(Direction.EAST, node, width, height, nodes) }
+                val west by lazy { calculateEdge(Direction.WEST, node, width, height, nodes) }
                 val edges: Map<Direction, Set<Edge>> = when (node.type) {
                     // |
                     NodeType.SPLITTER_NS -> listOf(
@@ -97,17 +95,25 @@ object Day16 {
                     )
                     else -> emptyList()
                 }.toMap()
-                newNodesByPoint[node.point] = node.copy(edgesByInputDirection = edges)
+                node.point to node.copy(edges = edges)
             }
-        return Graph(newNodesByPoint, width, height)
-    }
 
-    private fun connection(
+    private fun calculateEdge(
+        direction: Direction,
+        node: Node,
+        width: Int,
+        height: Int,
+        nodes: Map<Point, Node>
+    ): Edge? =
+        Edge(findConnection(direction, node.point, width, height, nodes), direction)
+            .takeIf { it.nextPoint != node.point }
+
+    private fun findConnection(
         direction: Direction,
         point: Point,
         width: Int,
         height: Int,
-        newNodesByPoint: MutableMap<Point, Node>,
+        nodes: Map<Point, Node>,
     ): Point {
         val a = when (direction) {
             Direction.NORTH, Direction.SOUTH -> point.x
@@ -132,7 +138,7 @@ object Day16 {
             }
         }
         val b = bRange.firstOrNull { b ->
-            val type = newNodesByPoint[pointOf(a, b)]?.type ?: NodeType.EMPTY
+            val type = nodes[pointOf(a, b)]?.type ?: NodeType.EMPTY
             type != NodeType.EMPTY
         } ?: maxB
         return pointOf(a, b)
@@ -149,10 +155,10 @@ object Day16 {
     private data class Node(
         val type: NodeType,
         val point: Point,
-        val edgesByInputDirection: Map<Direction, Set<Edge>> = emptyMap(),
+        val edges: Map<Direction, Set<Edge>> = emptyMap(),
     )
     private data class Edge(val nextPoint: Point, val nextDirection: Direction)
-    private data class Graph(val nodesByPoint: Map<Point, Node>, val width: Int, val height: Int) {
+    private data class Graph(val nodes: Map<Point, Node>, val width: Int, val height: Int) {
         fun firstNode(start: Int, direction: Direction): Node? {
             val a: (Point) -> Int = { (x, y) ->
                 when (direction) {
@@ -166,7 +172,7 @@ object Day16 {
                     Direction.EAST, Direction.WEST -> y
                 }
             }
-            val nodes = nodesByPoint.values.filter { b(it.point) == start && it.type != NodeType.EMPTY }
+            val nodes = nodes.values.filter { b(it.point) == start && it.type != NodeType.EMPTY }
             return when (direction) {
                 Direction.NORTH, Direction.WEST -> nodes.maxByOrNull { a(it.point) }
                 Direction.SOUTH, Direction.EAST -> nodes.minByOrNull { a(it.point) }
@@ -176,7 +182,7 @@ object Day16 {
         override fun toString(): String =
             (0..<height).joinToString("\n") { y ->
                 (0..<width).joinToString("") { x ->
-                    "${nodesByPoint[Point(x, y)]?.type?.char ?: '.'}"
+                    "${nodes[Point(x, y)]?.type?.char ?: '.'}"
                 }
             }
 
@@ -195,7 +201,7 @@ object Day16 {
             while (remaining.isNotEmpty()) {
                 val (node, direction) = remaining.removeFirst()
                 if (visited.contains(node.point to direction)) continue
-                node.edgesByInputDirection[direction]?.forEach { (nextPoint, nextDirection) ->
+                node.edges[direction]?.forEach { (nextPoint, nextDirection) ->
                     val startX = minOf(node.point.x, nextPoint.x)
                     val startY = minOf(node.point.y, nextPoint.y)
                     val endX = maxOf(node.point.x, nextPoint.x)
@@ -203,7 +209,7 @@ object Day16 {
                     val energizedPoints = (startX..endX).cartesianProduct(startY..endY)
                         .map { (x, y) -> Point(x, y) }
                     energized.addAll(energizedPoints)
-                    remaining.addLast((nodesByPoint[nextPoint] ?: error("Missing node: $nextPoint")) to nextDirection)
+                    remaining.addLast((nodes[nextPoint] ?: error("Missing node: $nextPoint")) to nextDirection)
                 }
                 visited.add(node.point to direction)
             }
